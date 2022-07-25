@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "106513147084",
+    "project_id": "pollingapp-2301",
+    "storage_bucket": "pollingapp-2301.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:106513147084:android:5f662ff635ba924444ce69",
+        "android_client_info": {
+          "package_name": "com.pollingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "106513147084-rl0o6fh0aln13vpp5le944ll3advj7iv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pollingapp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "106513147084-slpk6p8iesi6lr6oein26m47mlvabppt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCN0Oy3pyC4_c-7K71312NhEYWaB3KF2JM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "106513147084-slpk6p8iesi6lr6oein26m47mlvabppt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
