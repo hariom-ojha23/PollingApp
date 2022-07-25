@@ -4,9 +4,8 @@ import {View, StyleSheet, useColorScheme} from 'react-native';
 import FloatingCreateButton from '../../components/FloatingCreateButton';
 import Colors from '../../constants/Colors';
 
-const Home = ({navigation}) => {
+const StarredPolls = ({navigation}) => {
   const colorScheme = useColorScheme();
-
   const onPress = () => {
     navigation.navigate('CreatePoll');
   };
@@ -35,4 +34,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default StarredPolls;
