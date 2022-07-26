@@ -10,7 +10,7 @@ const OutlinedInput = props => {
   return (
     <View style={styles.inputBox}>
       <Icon
-        style={{marginRight: 15}}
+        style={{marginRight: 5}}
         name={props.icon}
         size={18}
         color="#007bff"

@@ -22,4 +22,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FloatingCreateButton;
+export default React.memo(FloatingCreateButton);

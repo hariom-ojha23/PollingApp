@@ -19,6 +19,7 @@ import MyPolls from '../screen/main/my-polls';
 import StarredPolls from '../screen/main/starred-poll';
 import Profile from '../screen/main/profile';
 import CreatePoll from '../screen/main/create-poll';
+import Colors from '../constants/Colors';
 
 const Navigation = ({colorScheme}) => {
   const [initializing, setInitializing] = useState(true);
@@ -67,7 +68,9 @@ const RootNavigator = () => {
       <Stack.Screen
         name="CreatePoll"
         component={CreatePoll}
-        options={{headerTitle: 'Create Poll'}}
+        options={{
+          title: 'Create Poll',
+        }}
       />
     </Stack.Navigator>
   );
@@ -96,6 +99,7 @@ const AuthNavigator = () => {
 };
 
 const BottomNavigator = () => {
+  const colorScheme = useColorScheme();
   return (
     <Bottom.Navigator
       initialRouteName="Home"
@@ -147,6 +151,15 @@ const BottomNavigator = () => {
           title: 'Profile',
           tabBarIcon: ({color}) => (
             <Icon name="user-alt" size={18} color={color} />
+          ),
+          headerRight: () => (
+            <FIcon
+              style={{marginRight: 20}}
+              name="sign-out"
+              size={24}
+              color={Colors[colorScheme].text}
+              onPress={() => auth().signOut()}
+            />
           ),
         }}
       />
