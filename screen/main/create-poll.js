@@ -44,7 +44,7 @@ const CreatePoll = () => {
       pollName,
       pollQuestion,
       privacy,
-      choices,
+      voters: [],
       createdBy: currentUser.uid,
       createdAt: firestore.Timestamp.now(),
     };
@@ -52,7 +52,17 @@ const CreatePoll = () => {
     await firestore()
       .collection('polls')
       .add(body)
-      .then(() => console.log('Poll Added'))
+      .then(res => {
+        choices.forEach(choice => {
+          firestore()
+            .collection('polls')
+            .doc(res.id)
+            .collection('choices')
+            .add(choice)
+            .then(() => console.log('choice added'));
+        });
+      })
+      .then(() => console.log('poll added'))
       .catch(er => console.log(er.message));
 
     setPollName('');

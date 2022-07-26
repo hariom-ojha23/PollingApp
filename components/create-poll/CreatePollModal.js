@@ -24,6 +24,7 @@ const CreatePollModal = props => {
     const data = {
       id: uuid.v4(),
       choice: choice,
+      voteCount: 0,
     };
 
     props.setChoices(choices => [...choices, data]);
