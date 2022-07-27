@@ -4,14 +4,17 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import Navigation from './navigation/navigation';
+import {FirebaseProvider} from './context/firebaseContext';
 
 const App = () => {
   const colorScheme = useColorScheme();
 
   return (
-    <SafeAreaProvider>
-      <Navigation colorScheme={colorScheme} />
-    </SafeAreaProvider>
+    <FirebaseProvider>
+      <SafeAreaProvider>
+        <Navigation colorScheme={colorScheme} />
+      </SafeAreaProvider>
+    </FirebaseProvider>
   );
 };
 

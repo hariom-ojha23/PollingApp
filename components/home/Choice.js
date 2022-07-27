@@ -24,7 +24,7 @@ const Choice = ({choice, bg, totalVote, onPress}) => {
 
   useEffect(() => {
     Animated.timing(barWidth, {
-      duration: 1000,
+      duration: 1500,
       toValue: choice.voteCount,
       useNativeDriver: false,
     }).start();

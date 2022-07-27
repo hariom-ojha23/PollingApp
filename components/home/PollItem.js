@@ -1,12 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, useColorScheme, Image} from 'react-native';
+import React, {useEffect, useState, useContext} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  useColorScheme,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import Colors from '../../constants/Colors';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import FIcon from 'react-native-vector-icons/FontAwesome';
 import Choice from './Choice';
 
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import {FirebaseContext} from '../../context/firebaseContext';
 
 const colorArr = ['#ee5186', '#66BB6A', '#FFA726', '#49a3f1'];
 
@@ -14,6 +23,7 @@ const PollItem = ({poll}) => {
   const [choices, setChoices] = useState([]);
 
   const colorScheme = useColorScheme();
+  const {user, starredPoll} = useContext(FirebaseContext);
 
   const colorText = {color: Colors[colorScheme].text};
   const colorGray = {color: Colors[colorScheme].gray};
@@ -40,7 +50,7 @@ const PollItem = ({poll}) => {
     return () => sub();
   }, [poll]);
 
-  const onPress = async choice => {
+  const onPressChoice = async choice => {
     const document = await firestore().collection('polls').doc(poll.id).get();
 
     if (!document.exists) {
@@ -72,6 +82,36 @@ const PollItem = ({poll}) => {
       })
       .then(() => console.log('Voter list updated'))
       .catch(er => console.log(er));
+  };
+
+  const onPressStar = async () => {
+    const document = await firestore()
+      .collection('starred')
+      .doc(user.uid)
+      .get();
+
+    if (!document.exists) {
+      firestore()
+        .collection('starred')
+        .doc(user.uid)
+        .set({starredPoll: [poll.id]})
+        .then(() => console.log('Set and Starred'))
+        .catch(er => console.log(er));
+    } else if (starredPoll.includes(poll.id)) {
+      firestore()
+        .collection('starred')
+        .doc(user.uid)
+        .update({starredPoll: firestore.FieldValue.arrayRemove(poll.id)})
+        .then(() => console.log('Unstarred'))
+        .catch(er => console.log(er));
+    } else {
+      firestore()
+        .collection('starred')
+        .doc(user.uid)
+        .update({starredPoll: firestore.FieldValue.arrayUnion(poll.id)})
+        .then(() => console.log('Starred'))
+        .catch(er => console.log(er));
+    }
   };
 
   return (
@@ -111,7 +151,7 @@ const PollItem = ({poll}) => {
             choice={choice}
             bg={colorArr[i]}
             totalVote={poll.voters.length}
-            onPress={onPress}
+            onPress={onPressChoice}
           />
         ))}
       </View>
@@ -120,7 +160,13 @@ const PollItem = ({poll}) => {
         <Text style={[colorGray, {fontWeight: '600'}]}>
           Total Votes: {poll.voters.length}
         </Text>
-        <Icon name="star" size={18} color="orange" />
+        <TouchableOpacity onPress={onPressStar}>
+          {starredPoll.includes(poll.id) ? (
+            <FIcon name="star" size={21} color="red" />
+          ) : (
+            <Icon name="star" size={20} color="red" />
+          )}
+        </TouchableOpacity>
       </View>
     </View>
   );
