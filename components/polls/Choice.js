@@ -63,13 +63,13 @@ const styles = StyleSheet.create({
   progress: {
     borderRadius: 50,
     opacity: 0.9,
-    height: 38,
+    height: 40,
   },
   choiceText: {
-    width: '85%',
+    width: '80%',
     fontWeight: '600',
     position: 'absolute',
-    left: 10,
+    left: 15,
   },
   choicePercent: {
     width: '15%',

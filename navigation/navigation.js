@@ -19,6 +19,8 @@ import MyPolls from '../screen/main/my-polls';
 import StarredPolls from '../screen/main/starred-poll';
 import Profile from '../screen/main/profile';
 import CreatePoll from '../screen/main/create-poll';
+import PollDetail from '../screen/main/poll-detail';
+import VotePoll from '../screen/main/vote-poll';
 import Colors from '../constants/Colors';
 
 const Navigation = ({colorScheme}) => {
@@ -70,6 +72,20 @@ const RootNavigator = () => {
         component={CreatePoll}
         options={{
           title: 'Create Poll',
+        }}
+      />
+      <Stack.Screen
+        name="PollDetail"
+        component={PollDetail}
+        options={{
+          title: 'Poll Details',
+        }}
+      />
+      <Stack.Screen
+        name="VotePoll"
+        component={VotePoll}
+        options={{
+          headerShown: false,
         }}
       />
     </Stack.Navigator>

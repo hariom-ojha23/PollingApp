@@ -4,20 +4,18 @@ import {
   Text,
   StyleSheet,
   useColorScheme,
-  Image,
   TouchableOpacity,
 } from 'react-native';
 import Colors from '../../constants/Colors';
-import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import FIcon from 'react-native-vector-icons/FontAwesome';
 import Choice from './Choice';
 
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import {FirebaseContext} from '../../context/firebaseContext';
+import PollHeader from './PollHeader';
 
-const colorArr = ['#ee5186', '#66BB6A', '#FFA726', '#49a3f1'];
+const colorArr = ['#ee5186', '#66BB6A', '#49a3f1', '#FFA726'];
 
 const PollItem = ({poll}) => {
   const [choices, setChoices] = useState([]);
@@ -27,8 +25,6 @@ const PollItem = ({poll}) => {
 
   const colorText = {color: Colors[colorScheme].text};
   const colorGray = {color: Colors[colorScheme].gray};
-
-  const {currentUser} = auth();
 
   useEffect(() => {
     const sub = firestore()
@@ -56,7 +52,7 @@ const PollItem = ({poll}) => {
     if (!document.exists) {
       console.log('No Such Poll Exist. Please Refresh');
       return;
-    } else if (document.data().voters.includes(currentUser.uid)) {
+    } else if (document.data().voters.includes(user.uid)) {
       console.log('You already voted!');
       return;
     }
@@ -78,7 +74,7 @@ const PollItem = ({poll}) => {
       .collection('polls')
       .doc(poll.id)
       .update({
-        voters: firestore.FieldValue.arrayUnion(currentUser.uid),
+        voters: firestore.FieldValue.arrayUnion(user.uid),
       })
       .then(() => console.log('Voter list updated'))
       .catch(er => console.log(er));
@@ -116,28 +112,11 @@ const PollItem = ({poll}) => {
 
   return (
     <View style={[styles.card, {backgroundColor: Colors[colorScheme].card}]}>
-      <View style={styles.header}>
-        <View style={styles.nameBox}>
-          <Image
-            style={styles.avatar}
-            source={{
-              uri: 'https://reactnative.dev/img/tiny_logo.png',
-            }}
-          />
-          <Text style={[styles.name, {color: Colors[colorScheme].text}]}>
-            Hari om Ojha
-          </Text>
-        </View>
-
-        <Text
-          style={{
-            fontSize: 12,
-            fontWeight: '600',
-            color: Colors[colorScheme].gray,
-          }}>
-          {moment(poll.createdAt.seconds * 1000).format('DD MMM yyy')}
-        </Text>
-      </View>
+      <PollHeader
+        createdAt={poll.createdAt}
+        colorText={colorText}
+        colorGray={colorGray}
+      />
 
       <View style={styles.questionBox}>
         <Text style={[styles.name, colorGray]}>{poll.pollName}</Text>
@@ -162,7 +141,7 @@ const PollItem = ({poll}) => {
         </Text>
         <TouchableOpacity onPress={onPressStar}>
           {starredPoll.includes(poll.id) ? (
-            <FIcon name="star" size={21} color="red" />
+            <FIcon name="star" size={22} color="red" />
           ) : (
             <Icon name="star" size={20} color="red" />
           )}
@@ -179,24 +158,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 10,
     padding: 10,
-  },
-  header: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  nameBox: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  avatar: {
-    height: 32,
-    width: 32,
-    borderRadius: 50,
-    marginRight: 6,
   },
   name: {
     fontSize: 16,

@@ -1,38 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {View, StyleSheet, FlatList, ActivityIndicator} from 'react-native';
 
-import firestore from '@react-native-firebase/firestore';
-
 import FloatingCreateButton from '../../components/FloatingCreateButton';
-import PollItem from '../../components/home/PollItem';
+import PollItem from '../../components/polls/PollItem';
+import {FirebaseContext} from '../../context/firebaseContext';
 
 const Home = ({navigation}) => {
-  const [loading, setLoading] = useState(true);
-  const [polls, setPolls] = useState([]);
-
-  useEffect(() => {
-    const sub = firestore()
-      .collection('polls')
-      .where('privacy', '==', 'Public')
-      .orderBy('createdAt', 'desc')
-      .onSnapshot({
-        error: e => console.log(e),
-        next: querySnapshot => {
-          const polls = [];
-          querySnapshot.forEach(snapshot => {
-            polls.push({
-              ...snapshot.data(),
-              id: snapshot.id,
-            });
-          });
-
-          setPolls(polls);
-          setLoading(false);
-        },
-      });
-
-    return () => sub();
-  }, []);
+  const {polls, loading} = useContext(FirebaseContext);
 
   const onPress = () => {
     navigation.navigate('CreatePoll');
@@ -48,7 +22,7 @@ const Home = ({navigation}) => {
         <FloatingCreateButton onPress={onPress} />
       </View>
 
-      <View style={styles.pollsContainer}>
+      <View>
         <FlatList
           contentContainerStyle={styles.list}
           data={polls}
@@ -78,4 +52,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default React.memo(Home);

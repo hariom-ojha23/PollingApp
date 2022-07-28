@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   View,
   Text,
@@ -12,9 +12,10 @@ import {
 import RadioButtonRN from 'radio-buttons-react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 
 import Colors from '../../constants/Colors';
+import {FirebaseContext} from '../../context/firebaseContext';
+
 import OutlinedInput from '../../components/auth/OutlinedInput';
 import CreatePollModal from '../../components/create-poll/CreatePollModal';
 import PollChoiceItem from '../../components/create-poll/PollChoiceItem';
@@ -37,7 +38,7 @@ const CreatePoll = () => {
   const [privacy, setPrivacy] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const {currentUser} = auth();
+  const {user} = useContext(FirebaseContext);
 
   const createPoll = async () => {
     const body = {
@@ -45,7 +46,7 @@ const CreatePoll = () => {
       pollQuestion,
       privacy,
       voters: [],
-      createdBy: currentUser.uid,
+      createdBy: user.uid,
       createdAt: firestore.Timestamp.now(),
     };
 
