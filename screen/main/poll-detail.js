@@ -1,10 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, useColorScheme} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  useColorScheme,
+  TouchableOpacity,
+} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
 
 import Colors from '../../constants/Colors';
 import Choice from '../../components/polls/Choice';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const colorArr = ['#ee5186', '#66BB6A', '#49a3f1', '#FFA726'];
 
@@ -39,6 +46,10 @@ const PollDetail = props => {
 
   const onPressChoice = _ => {};
 
+  const onPressShare = () => {
+    console.log('send');
+  };
+
   return (
     <View
       style={[
@@ -70,6 +81,12 @@ const PollDetail = props => {
           {moment(poll.createdAt.seconds * 1000).format('DD MMM yyy')}
         </Text>
       </View>
+
+      <TouchableOpacity style={styles.btn} onPress={onPressShare}>
+        <Icon name="share-social" size={20} color="white" />
+
+        <Text style={styles.btnText}>Share Poll Link</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -78,6 +95,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
+    position: 'relative',
   },
   name: {
     fontSize: 16,
@@ -101,6 +119,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  btn: {
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+    backgroundColor: '#007bff',
+    padding: 12,
+    width: '100%',
+    borderRadius: 50,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  btnText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'white',
+    marginLeft: 10,
   },
 });
 

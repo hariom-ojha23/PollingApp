@@ -9,6 +9,16 @@ export const FirebaseProvider = ({children}) => {
   const [starredPoll, setStarredPoll] = useState([]);
   const [polls, setPolls] = useState([]);
   const [myPolls, setMyPolls] = useState([]);
+  const [poll, setPoll] = useState({
+    id: '',
+    pollName: '',
+    pollQuestion: '',
+    privacy: '',
+    createdAt: {seconds: 0, milliseconds: 0},
+    createdBy: '',
+    voters: [],
+  });
+  const [searchPoll, setSearchPoll] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -83,9 +93,28 @@ export const FirebaseProvider = ({children}) => {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (searchPoll !== null && user !== null) {
+      const sub = firestore()
+        .collection('polls')
+        .doc(searchPoll)
+        .onSnapshot({
+          error: er => console.log('102', er),
+          next: snapshot => {
+            if (snapshot.exists) {
+              const data = snapshot.data();
+              setPoll({...data, id: searchPoll});
+            }
+          },
+        });
+
+      return () => sub();
+    }
+  }, [searchPoll]);
+
   return (
     <FirebaseContext.Provider
-      value={{user, polls, loading, starredPoll, myPolls}}>
+      value={{user, polls, loading, starredPoll, myPolls, poll, setSearchPoll}}>
       {children}
     </FirebaseContext.Provider>
   );

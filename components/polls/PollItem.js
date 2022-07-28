@@ -141,9 +141,9 @@ const PollItem = ({poll}) => {
         </Text>
         <TouchableOpacity onPress={onPressStar}>
           {starredPoll.includes(poll.id) ? (
-            <FIcon name="star" size={22} color="red" />
+            <FIcon name="star" size={22} color="orange" />
           ) : (
-            <Icon name="star" size={20} color="red" />
+            <Icon name="star" size={20} color="orange" />
           )}
         </TouchableOpacity>
       </View>

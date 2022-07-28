@@ -22,6 +22,7 @@ import CreatePoll from '../screen/main/create-poll';
 import PollDetail from '../screen/main/poll-detail';
 import VotePoll from '../screen/main/vote-poll';
 import Colors from '../constants/Colors';
+import linking from '../constants/Linking';
 
 const Navigation = ({colorScheme}) => {
   const [initializing, setInitializing] = useState(true);
@@ -42,7 +43,8 @@ const Navigation = ({colorScheme}) => {
   if (!user) {
     return (
       <NavigationContainer
-        theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+        linking={linking}>
         <AuthNavigator />
       </NavigationContainer>
     );
@@ -50,7 +52,8 @@ const Navigation = ({colorScheme}) => {
 
   return (
     <NavigationContainer
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+      linking={linking}>
       <RootNavigator />
     </NavigationContainer>
   );
@@ -85,7 +88,7 @@ const RootNavigator = () => {
         name="VotePoll"
         component={VotePoll}
         options={{
-          headerShown: false,
+          title: 'Vote',
         }}
       />
     </Stack.Navigator>
