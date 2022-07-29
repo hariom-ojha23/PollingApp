@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
+  Share,
   StyleSheet,
   useColorScheme,
   TouchableOpacity,
@@ -64,8 +65,25 @@ const PollDetail = props => {
       },
     });
 
-    // const link = `pollingapp://vote/${poll.id}`;
-    console.log(link);
+    try {
+      const result = await Share.share({
+        title: `Polling App - ${poll.pollName}`,
+        message: link,
+        url: link,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          console.log('Activity Type');
+        } else {
+          console.log('Shared');
+        }
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Share Dismissed');
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   if (loading) {

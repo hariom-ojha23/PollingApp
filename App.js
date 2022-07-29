@@ -15,7 +15,9 @@ const App = () => {
     const sub = dynamicLinks().onLink(link => {
       if (link === null) return;
       const id = link.url.split('=').pop();
-      navigationService.navigate('VotePoll', {id});
+      setTimeout(() => {
+        navigationService.navigate('VotePoll', {id});
+      }, 1500);
     });
     return () => sub();
   }, []);
@@ -27,7 +29,9 @@ const App = () => {
       .then(link => {
         if (link === null) return;
         const id = link.url.split('=').pop();
-        navigationService.navigate('VotePoll', {id});
+        setTimeout(() => {
+          navigationService.navigate('VotePoll', {id});
+        }, 1500);
       });
   }, []);
 
