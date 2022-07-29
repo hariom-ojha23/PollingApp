@@ -9,13 +9,12 @@ import {FirebaseContext} from '../../context/firebaseContext';
 
 const colorArr = ['#ee5186', '#66BB6A', '#49a3f1', '#FFA726'];
 
-const VotePoll = ({route}) => {
+const VotePoll = props => {
   const [choices, setChoices] = useState([]);
 
-  const {poll, setSearchPoll, user} = useContext(FirebaseContext);
+  const {poll, user, setSearchPoll} = useContext(FirebaseContext);
 
-  const {id} = route.params;
-
+  const {id} = props.route.params;
   const colorScheme = useColorScheme();
   const colorText = {color: Colors[colorScheme].text};
   const colorGray = {color: Colors[colorScheme].gray};

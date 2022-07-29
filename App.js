@@ -1,13 +1,35 @@
-import React from 'react';
-import {SafeAreaView, useColorScheme, Text} from 'react-native';
+import React, {useEffect} from 'react';
+import {useColorScheme} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import Navigation from './navigation/navigation';
 import {FirebaseProvider} from './context/firebaseContext';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
+import navigationService from './navigation/navigation-service';
 
 const App = () => {
   const colorScheme = useColorScheme();
+
+  // listening for dynamic links in foreground
+  useEffect(() => {
+    const sub = dynamicLinks().onLink(link => {
+      if (link === null) return;
+      const id = link.url.split('=').pop();
+      navigationService.navigate('VotePoll', {id});
+    });
+    return () => sub();
+  }, []);
+
+  // listening for dynamic links in background
+  useEffect(() => {
+    dynamicLinks()
+      .getInitialLink()
+      .then(link => {
+        if (link === null) return;
+        const id = link.url.split('=').pop();
+        navigationService.navigate('VotePoll', {id});
+      });
+  }, []);
 
   return (
     <FirebaseProvider>

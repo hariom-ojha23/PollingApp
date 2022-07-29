@@ -5,6 +5,7 @@ import {
   StyleSheet,
   useColorScheme,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
@@ -12,11 +13,13 @@ import moment from 'moment';
 import Colors from '../../constants/Colors';
 import Choice from '../../components/polls/Choice';
 import Icon from 'react-native-vector-icons/Ionicons';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 const colorArr = ['#ee5186', '#66BB6A', '#49a3f1', '#FFA726'];
 
 const PollDetail = props => {
   const [choices, setChoices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const {poll} = props.route.params;
 
@@ -39,6 +42,7 @@ const PollDetail = props => {
           });
         });
         setChoices(choices);
+        setLoading(false);
       });
 
     return () => sub();
@@ -46,9 +50,27 @@ const PollDetail = props => {
 
   const onPressChoice = _ => {};
 
-  const onPressShare = () => {
-    console.log('send');
+  const onPressShare = async () => {
+    const link = await dynamicLinks().buildLink({
+      link: `https://pollingapp/vote?poll=${poll.id}`,
+      domainUriPrefix: 'https://pollingapp.page.link',
+      android: {
+        packageName: 'com.pollingapp',
+        fallbackUrl:
+          'https://play.google.com/store/apps/details?id=com.pollingapp',
+      },
+      navigation: {
+        forcedRedirectEnabled: true,
+      },
+    });
+
+    // const link = `pollingapp://vote/${poll.id}`;
+    console.log(link);
   };
+
+  if (loading) {
+    return <ActivityIndicator size={30} style={{marginTop: 30}} />;
+  }
 
   return (
     <View

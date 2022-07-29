@@ -5,6 +5,7 @@ import {
   NavigationContainer,
   DefaultTheme,
   DarkTheme,
+  useNavigation,
 } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -22,7 +23,7 @@ import CreatePoll from '../screen/main/create-poll';
 import PollDetail from '../screen/main/poll-detail';
 import VotePoll from '../screen/main/vote-poll';
 import Colors from '../constants/Colors';
-import linking from '../constants/Linking';
+import navigationService from './navigation-service';
 
 const Navigation = ({colorScheme}) => {
   const [initializing, setInitializing] = useState(true);
@@ -44,7 +45,7 @@ const Navigation = ({colorScheme}) => {
     return (
       <NavigationContainer
         theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-        linking={linking}>
+        ref={ref => navigationService.topLevelNavigator(ref)}>
         <AuthNavigator />
       </NavigationContainer>
     );
@@ -53,7 +54,7 @@ const Navigation = ({colorScheme}) => {
   return (
     <NavigationContainer
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-      linking={linking}>
+      ref={ref => navigationService.topLevelNavigator(ref)}>
       <RootNavigator />
     </NavigationContainer>
   );

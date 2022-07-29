@@ -20,6 +20,7 @@ export const FirebaseProvider = ({children}) => {
   });
   const [searchPoll, setSearchPoll] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [appOpen, setAppOpen] = useState(false);
 
   useEffect(() => {
     auth().onAuthStateChanged(setUser);
