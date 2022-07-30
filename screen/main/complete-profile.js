@@ -11,30 +11,30 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {FirebaseContext} from '../../context/firebaseContext';
 
 import Colors from '../../constants/Colors';
 import OutlinedInput from '../../components/auth/OutlinedInput';
-import {FirebaseContext} from '../../context/firebaseContext';
 
-const Profile = () => {
+const CompleteProfile = ({navigation}) => {
   const [fullName, setFullName] = useState('');
   const [photo, setPhoto] = useState(
     'https://firebasestorage.googleapis.com/v0/b/social-app-9923d.appspot.com/o/default.jpg?alt=media&token=25fb473c-f799-4270-8a29-6de3350660c2',
   );
+  const [photoChanged, setPhotoChanged] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const colorScheme = useColorScheme();
-  const {user} = useContext(FirebaseContext);
+  const {user, setUser} = useContext(FirebaseContext);
 
   useEffect(() => {
     if (!!user) {
-      setFullName(user.displayName);
-      setPhoto(user.photoURL);
       setPhoneNumber(user.phoneNumber);
     }
-  }, [user]);
+  }, []);
 
   const selectPhoto = async () => {
     const options = {
@@ -52,12 +52,18 @@ const Profile = () => {
       } else if (response.assets) {
         const file = response.assets[0];
         setPhoto(file.uri);
+        setPhotoChanged(true);
       }
     });
   };
 
   const uploadAndGetUrl = async () => {
     return new Promise(resolve => {
+      if (photo.startsWith('http')) {
+        resolve(photo);
+        return;
+      }
+
       const ref = storage().ref(user.uid);
       const task = ref.putFile(photo);
 
@@ -75,22 +81,32 @@ const Profile = () => {
     });
   };
 
-  const updateProfile = async () => {
-    if (photo !== user.photoURL) {
-      await uploadAndGetUrl().then(async url => {
-        await auth()
-          .currentUser.updateProfile({photoURL: url})
-          .then(() => console.log('Profile Photo Updated'))
-          .catch(er => console.log(er));
-      });
-    }
+  const completeProfile = async () => {
+    await uploadAndGetUrl().then(async url => {
+      const userData = {
+        displayName: fullName,
+        phoneNumber: `+91${phoneNumber}`,
+        photoURL: url,
+      };
 
-    if (fullName !== user.displayName) {
-      await auth()
-        .currentUser.updateProfile({displayName: fullName})
-        .then(() => console.log('Full Name Updated'))
+      await firestore()
+        .collection('users')
+        .doc(user.uid)
+        .set(userData)
         .catch(er => console.log(er));
-    }
+
+      await auth()
+        .currentUser.updateProfile({
+          displayName: fullName,
+          photoURL: url,
+        })
+        .then(res => {
+          console.log(res);
+          setUser(auth().currentUser);
+          console.log('Profile Updated');
+        })
+        .catch(er => console.log(er));
+    });
   };
 
   return (
@@ -99,7 +115,9 @@ const Profile = () => {
         styles.container,
         {backgroundColor: Colors[colorScheme].background},
       ]}>
-      <ScrollView style={{padding: 15}}>
+      <ScrollView
+        contentContainerStyle={{paddingBottom: 60}}
+        style={{padding: 15}}>
         <View style={styles.avatarContainer}>
           <View style={{position: 'relative'}}>
             <Image source={{uri: photo}} style={styles.avatar} />
@@ -123,21 +141,23 @@ const Profile = () => {
           <View style={styles.input}>
             <OutlinedInput
               icon="user-alt"
-              placeholder="Enter Your Name"
-              value={`${fullName}`}
+              placeholder="Enter Full Name"
+              value={fullName}
               onChangeText={setFullName}
             />
           </View>
           <View style={styles.input}>
             <OutlinedInput
               icon="phone-alt"
-              value={`${phoneNumber}`}
+              placeholder="Enter Phone Number"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
               editable={false}
             />
           </View>
         </View>
 
-        <TouchableOpacity onPress={updateProfile} style={styles.btn}>
+        <TouchableOpacity onPress={completeProfile} style={styles.btn}>
           <Text style={styles.btnText}>Save Details</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -153,7 +173,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 30,
+    marginTop: 60,
     marginBottom: 60,
   },
   avatarBox: {
@@ -181,9 +201,10 @@ const styles = StyleSheet.create({
   },
   btn: {
     backgroundColor: '#007bff',
-    padding: 12,
+    padding: 15,
     width: '100%',
     borderRadius: 50,
+    marginBottom: 30,
   },
   btnText: {
     fontSize: 16,
@@ -193,4 +214,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+export default CompleteProfile;

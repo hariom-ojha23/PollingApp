@@ -17,7 +17,7 @@ const App = () => {
       const id = link.url.split('=').pop();
       setTimeout(() => {
         navigationService.navigate('VotePoll', {id});
-      }, 1500);
+      }, 1000);
     });
     return () => sub();
   }, []);
@@ -31,7 +31,7 @@ const App = () => {
         const id = link.url.split('=').pop();
         setTimeout(() => {
           navigationService.navigate('VotePoll', {id});
-        }, 1500);
+        }, 1000);
       });
   }, []);
 

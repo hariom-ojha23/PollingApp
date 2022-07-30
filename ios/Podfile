@@ -19,6 +19,8 @@ target 'PollingApp' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+
   target 'PollingAppTests' do
     inherit! :complete
     # Pods for testing

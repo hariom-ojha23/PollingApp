@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import {View, StyleSheet, FlatList, ActivityIndicator} from 'react-native';
 
 import FloatingCreateButton from '../../components/FloatingCreateButton';
@@ -6,7 +6,7 @@ import PollItem from '../../components/polls/PollItem';
 import {FirebaseContext} from '../../context/firebaseContext';
 
 const Home = ({navigation}) => {
-  const {polls, loading} = useContext(FirebaseContext);
+  const {polls, loading, user} = useContext(FirebaseContext);
 
   const onPress = () => {
     navigation.navigate('CreatePoll');

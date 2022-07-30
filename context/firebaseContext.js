@@ -115,7 +115,16 @@ export const FirebaseProvider = ({children}) => {
 
   return (
     <FirebaseContext.Provider
-      value={{user, polls, loading, starredPoll, myPolls, poll, setSearchPoll}}>
+      value={{
+        user,
+        setUser,
+        polls,
+        loading,
+        starredPoll,
+        myPolls,
+        poll,
+        setSearchPoll,
+      }}>
       {children}
     </FirebaseContext.Provider>
   );

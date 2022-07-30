@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, useColorScheme, Pressable} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  useColorScheme,
+  Pressable,
+  TouchableOpacity,
+} from 'react-native';
 
 import Colors from '../../constants/Colors';
 import OutlinedInput from '../../components/auth/OutlinedInput';

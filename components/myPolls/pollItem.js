@@ -23,6 +23,7 @@ const pollItem = ({poll, onPress}) => {
         createdAt={poll.createdAt}
         colorText={colorText}
         colorGray={colorGray}
+        createdBy={poll.createdBy}
       />
 
       <View style={styles.questionBox}>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {useColorScheme} from 'react-native';
 
 import {
@@ -24,20 +24,18 @@ import PollDetail from '../screen/main/poll-detail';
 import VotePoll from '../screen/main/vote-poll';
 import Colors from '../constants/Colors';
 import navigationService from './navigation-service';
+import CompleteProfile from '../screen/main/complete-profile';
+
+import {FirebaseContext} from '../context/firebaseContext';
 
 const Navigation = ({colorScheme}) => {
   const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState(null);
 
-  const onAuthStateChanged = user => {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  };
+  const {user} = useContext(FirebaseContext);
 
   useEffect(() => {
-    const sub = auth().onAuthStateChanged(onAuthStateChanged);
-    return sub;
-  }, []);
+    if (initializing) setInitializing(false);
+  }, [user]);
 
   if (initializing) return null;
 
@@ -47,6 +45,16 @@ const Navigation = ({colorScheme}) => {
         theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
         ref={ref => navigationService.topLevelNavigator(ref)}>
         <AuthNavigator />
+      </NavigationContainer>
+    );
+  }
+
+  if (!user.displayName) {
+    return (
+      <NavigationContainer
+        theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+        ref={ref => navigationService.topLevelNavigator(ref)}>
+        <CompleteProfileNavigator />
       </NavigationContainer>
     );
   }
@@ -90,6 +98,20 @@ const RootNavigator = () => {
         component={VotePoll}
         options={{
           title: 'Vote',
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const CompleteProfileNavigator = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="CompleteProfile"
+        component={CompleteProfile}
+        options={{
+          headerShown: false,
         }}
       />
     </Stack.Navigator>

@@ -24,7 +24,7 @@ const Choice = ({choice, bg, totalVote, onPress}) => {
 
   useEffect(() => {
     Animated.timing(barWidth, {
-      duration: 1500,
+      duration: 1000,
       toValue: choice.voteCount,
       useNativeDriver: false,
     }).start();
@@ -35,7 +35,7 @@ const Choice = ({choice, bg, totalVote, onPress}) => {
       const per = (choice.voteCount / totalVote) * 100;
       setPercent(per.toPrecision(3));
     }
-  }, [choice]);
+  }, [choice, votePercent]);
 
   return (
     <TouchableOpacity onPress={() => onPress(choice)} style={[styles.choice]}>

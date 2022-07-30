@@ -114,6 +114,7 @@ const PollItem = ({poll}) => {
     <View style={[styles.card, {backgroundColor: Colors[colorScheme].card}]}>
       <PollHeader
         createdAt={poll.createdAt}
+        createdBy={poll.createdBy}
         colorText={colorText}
         colorGray={colorGray}
       />
