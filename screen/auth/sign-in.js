@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   useColorScheme,
-  Pressable,
   TouchableOpacity,
 } from 'react-native';
 
@@ -54,9 +53,9 @@ const SignIn = ({navigation}) => {
           keyboardType="numeric"
         />
 
-        <Pressable style={styles.btn} onPress={onPress}>
+        <TouchableOpacity style={styles.btn} onPress={onPress}>
           <Text style={styles.btnText}>Send the Code</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </View>
   );

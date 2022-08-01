@@ -1,5 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, useColorScheme, Pressable} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  useColorScheme,
+  TouchableOpacity,
+} from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 import Colors from '../../constants/Colors';
@@ -56,9 +62,9 @@ const VerifyOtp = props => {
           keyboardType="numeric"
         />
 
-        <Pressable style={styles.btn} onPress={confirmCode}>
+        <TouchableOpacity style={styles.btn} onPress={confirmCode}>
           <Text style={styles.btnText}>Verify Phone Number</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </View>
   );
