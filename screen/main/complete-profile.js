@@ -8,6 +8,7 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
+  ToastAndroid,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import auth from '@react-native-firebase/auth';
@@ -19,12 +20,11 @@ import {FirebaseContext} from '../../context/firebaseContext';
 import Colors from '../../constants/Colors';
 import OutlinedInput from '../../components/auth/OutlinedInput';
 
-const CompleteProfile = ({navigation}) => {
+const CompleteProfile = () => {
   const [fullName, setFullName] = useState('');
   const [photo, setPhoto] = useState(
     'https://firebasestorage.googleapis.com/v0/b/social-app-9923d.appspot.com/o/default.jpg?alt=media&token=25fb473c-f799-4270-8a29-6de3350660c2',
   );
-  const [photoChanged, setPhotoChanged] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const colorScheme = useColorScheme();
@@ -45,14 +45,11 @@ const CompleteProfile = ({navigation}) => {
     };
 
     await launchImageLibrary(options, response => {
-      if (response.didCancel) {
-        console.log('User canceled image Picker');
-      } else if (response.errorMessage) {
-        console.log(response.errorMessage);
+      if (response.errorMessage) {
+        ToastAndroid.show(response.errorMessage, ToastAndroid.SHORT);
       } else if (response.assets) {
         const file = response.assets[0];
         setPhoto(file.uri);
-        setPhotoChanged(true);
       }
     });
   };
@@ -68,14 +65,14 @@ const CompleteProfile = ({navigation}) => {
       const task = ref.putFile(photo);
 
       task.on('state_changed', snap => {
-        console.log(
+        ToastAndroid.show(
           `${snap.bytesTransferred} transferred out of ${snap.totalBytes}`,
+          ToastAndroid.SHORT,
         );
       });
 
       task.then(async () => {
         const downloadUrl = await ref.getDownloadURL();
-        console.log('Image Uploaded Successfully', downloadUrl);
         resolve(downloadUrl);
       });
     });
@@ -103,7 +100,7 @@ const CompleteProfile = ({navigation}) => {
         .then(res => {
           console.log(res);
           setUser(auth().currentUser);
-          console.log('Profile Updated');
+          ToastAndroid.show('Profile Updated', ToastAndroid.SHORT);
         })
         .catch(er => console.log(er));
     });
@@ -118,6 +115,9 @@ const CompleteProfile = ({navigation}) => {
       <ScrollView
         contentContainerStyle={{paddingBottom: 60}}
         style={{padding: 15}}>
+        <Text style={[styles.title, {color: Colors[colorScheme].text}]}>
+          Complete Profile
+        </Text>
         <View style={styles.avatarContainer}>
           <View style={{position: 'relative'}}>
             <Image source={{uri: photo}} style={styles.avatar} />
@@ -169,11 +169,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  title: {
+    textAlign: 'center',
+    fontSize: 28,
+    marginVertical: 30,
+  },
   avatarContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 60,
+    marginTop: 30,
     marginBottom: 60,
   },
   avatarBox: {

@@ -18,24 +18,26 @@ const Choice = ({choice, bg, totalVote, onPress}) => {
 
   const barWidth = useRef(new Animated.Value(0)).current;
   const votePercent = barWidth.interpolate({
-    inputRange: [0, totalVote],
+    inputRange: [0, 100],
     outputRange: ['0%', '100%'],
   });
 
   useEffect(() => {
-    Animated.timing(barWidth, {
-      duration: 1000,
-      toValue: choice.voteCount,
-      useNativeDriver: false,
-    }).start();
-
     if (totalVote === 0) {
       setPercent(0);
     } else {
       const per = (choice.voteCount / totalVote) * 100;
       setPercent(per.toPrecision(3));
     }
-  }, [choice, votePercent]);
+  }, [choice]);
+
+  useEffect(() => {
+    Animated.timing(barWidth, {
+      duration: 1000,
+      toValue: percent,
+      useNativeDriver: false,
+    }).start();
+  }, [percent]);
 
   return (
     <TouchableOpacity onPress={() => onPress(choice)} style={[styles.choice]}>
@@ -62,7 +64,6 @@ const styles = StyleSheet.create({
   },
   progress: {
     borderRadius: 50,
-    opacity: 0.9,
     height: 40,
   },
   choiceText: {

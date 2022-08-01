@@ -8,6 +8,7 @@ import {
   ScrollView,
   Pressable,
   TouchableOpacity,
+  ToastAndroid,
 } from 'react-native';
 import RadioButtonRN from 'radio-buttons-react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -60,10 +61,10 @@ const CreatePoll = () => {
             .doc(res.id)
             .collection('choices')
             .add(choice)
-            .then(() => console.log('choice added'));
+            .catch(er => console.log(er.message));
         });
       })
-      .then(() => console.log('poll added'))
+      .then(() => ToastAndroid.show('Poll Created', ToastAndroid.SHORT))
       .catch(er => console.log(er.message));
 
     setPollName('');
@@ -117,7 +118,14 @@ const CreatePoll = () => {
 
           <TouchableOpacity
             style={styles.choiceBtn}
-            onPress={() => setOpen(true)}>
+            onPress={() =>
+              choices.length !== 4
+                ? setOpen(true)
+                : ToastAndroid.show(
+                    'Only 4 choices allowed',
+                    ToastAndroid.SHORT,
+                  )
+            }>
             <Icon
               name="plus"
               size={16}

@@ -6,7 +6,7 @@ import PollItem from '../../components/polls/PollItem';
 import {FirebaseContext} from '../../context/firebaseContext';
 
 const Home = ({navigation}) => {
-  const {polls, loading, user} = useContext(FirebaseContext);
+  const {polls, loading} = useContext(FirebaseContext);
 
   const onPress = () => {
     navigation.navigate('CreatePoll');

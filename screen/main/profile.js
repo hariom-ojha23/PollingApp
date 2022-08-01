@@ -8,6 +8,7 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
+  ToastAndroid,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import auth from '@react-native-firebase/auth';
@@ -45,10 +46,8 @@ const Profile = () => {
     };
 
     await launchImageLibrary(options, response => {
-      if (response.didCancel) {
-        console.log('User canceled image Picker');
-      } else if (response.errorMessage) {
-        console.log(response.errorMessage);
+      if (response.errorMessage) {
+        ToastAndroid.show(response.errorMessage, ToastAndroid.SHORT);
       } else if (response.assets) {
         const file = response.assets[0];
         setPhoto(file.uri);
@@ -62,14 +61,14 @@ const Profile = () => {
       const task = ref.putFile(photo);
 
       task.on('state_changed', snap => {
-        console.log(
+        ToastAndroid.show(
           `${snap.bytesTransferred} transferred out of ${snap.totalBytes}`,
+          ToastAndroid.SHORT,
         );
       });
 
       task.then(async () => {
         const downloadUrl = await ref.getDownloadURL();
-        console.log('Image Uploaded Successfully', downloadUrl);
         resolve(downloadUrl);
       });
     });
@@ -80,7 +79,7 @@ const Profile = () => {
       await uploadAndGetUrl().then(async url => {
         await auth()
           .currentUser.updateProfile({photoURL: url})
-          .then(() => console.log('Profile Photo Updated'))
+          .then(() => ToastAndroid.show('Profile Updated', ToastAndroid.SHORT))
           .catch(er => console.log(er));
       });
     }
@@ -88,7 +87,7 @@ const Profile = () => {
     if (fullName !== user.displayName) {
       await auth()
         .currentUser.updateProfile({displayName: fullName})
-        .then(() => console.log('Full Name Updated'))
+        .then(() => ToastAndroid.show('Full Name Updated', ToastAndroid.SHORT))
         .catch(er => console.log(er));
     }
   };

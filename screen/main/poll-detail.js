@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   useColorScheme,
   TouchableOpacity,
   ActivityIndicator,
+  ToastAndroid,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
@@ -15,14 +16,27 @@ import Colors from '../../constants/Colors';
 import Choice from '../../components/polls/Choice';
 import Icon from 'react-native-vector-icons/Ionicons';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
+import {FirebaseContext} from '../../context/firebaseContext';
 
 const colorArr = ['#ee5186', '#66BB6A', '#49a3f1', '#FFA726'];
 
 const PollDetail = props => {
   const [choices, setChoices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [poll, setPoll] = useState({
+    id: '',
+    pollName: '',
+    pollQuestion: '',
+    createdBy: '',
+    createdAt: {
+      seconds: 0,
+      milisecondes: 0,
+    },
+    voters: [],
+  });
 
-  const {poll} = props.route.params;
+  const {id} = props.route.params;
+  const {user} = useContext(FirebaseContext);
 
   const colorScheme = useColorScheme();
   const colorText = {color: Colors[colorScheme].text};
@@ -31,7 +45,23 @@ const PollDetail = props => {
   useEffect(() => {
     const sub = firestore()
       .collection('polls')
-      .doc(poll.id)
+      .doc(id)
+      .onSnapshot(querySnapshot => {
+        if (querySnapshot.exists) {
+          setPoll({
+            ...querySnapshot.data(),
+            id: querySnapshot.id,
+          });
+        }
+      });
+
+    return () => sub();
+  }, []);
+
+  useEffect(() => {
+    const sub = firestore()
+      .collection('polls')
+      .doc(id)
       .collection('choices')
       .onSnapshot(querySnapshot => {
         const choices = [];
@@ -49,11 +79,46 @@ const PollDetail = props => {
     return () => sub();
   }, [poll]);
 
-  const onPressChoice = _ => {};
+  const onPressChoice = async choice => {
+    const document = await firestore().collection('polls').doc(id).get();
+
+    if (!document.exists) {
+      ToastAndroid.show(
+        'No Such Poll Exist. Please Refresh',
+        ToastAndroid.SHORT,
+      );
+      return;
+    } else if (document.data().voters.includes(user.uid)) {
+      ToastAndroid.show('You already voted!', ToastAndroid.SHORT);
+      return;
+    }
+
+    firestore()
+      .collection('polls')
+      .doc(id)
+      .collection('choices')
+      .doc(choice.id)
+      .update({
+        voteCount: choice.voteCount + 1,
+      })
+      .then(() => {
+        console.log('updated');
+      })
+      .catch(error => console.log(error));
+
+    firestore()
+      .collection('polls')
+      .doc(id)
+      .update({
+        voters: firestore.FieldValue.arrayUnion(user.uid),
+      })
+      .then(() => console.log('Voter list updated'))
+      .catch(er => console.log(er));
+  };
 
   const onPressShare = async () => {
     const link = await dynamicLinks().buildLink({
-      link: `https://pollingapp/vote?poll=${poll.id}`,
+      link: `https://pollingapp/vote?poll=${id}`,
       domainUriPrefix: 'https://pollingapp.page.link',
       android: {
         packageName: 'com.pollingapp',
@@ -66,24 +131,41 @@ const PollDetail = props => {
     });
 
     try {
-      const result = await Share.share({
+      await Share.share({
         title: `Polling App - ${poll.pollName}`,
         message: link,
         url: link,
       });
-
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          console.log('Activity Type');
-        } else {
-          console.log('Shared');
-        }
-      } else if (result.action === Share.dismissedAction) {
-        console.log('Share Dismissed');
-      }
     } catch (error) {
-      console.log(error.message);
+      ToastAndroid.show(error.message, ToastAndroid.SHORT);
     }
+  };
+
+  const deleteChoices = async () => {
+    for (let choice of choices) {
+      await firestore()
+        .collection('polls')
+        .doc(id)
+        .collection('choices')
+        .doc(choice.id)
+        .delete()
+        .catch(er => console.log(er));
+    }
+  };
+
+  const onPressDelete = async () => {
+    await deleteChoices();
+    await firestore()
+      .collection('polls')
+      .doc(id)
+      .delete()
+      .then(() => {
+        ToastAndroid.show('Poll Deleted Successfully', ToastAndroid.SHORT);
+      })
+      .catch(error => {
+        console.log(error.message);
+      });
+    props.navigation.goBack();
   };
 
   if (loading) {
@@ -122,11 +204,21 @@ const PollDetail = props => {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.btn} onPress={onPressShare}>
-        <Icon name="share-social" size={20} color="white" />
+      <View style={styles.btnBox}>
+        <TouchableOpacity
+          style={[styles.btn, {backgroundColor: '#007bff'}]}
+          onPress={onPressShare}>
+          <Icon name="share-social" size={20} color="white" />
+          <Text style={styles.btnText}>Share Poll Link</Text>
+        </TouchableOpacity>
 
-        <Text style={styles.btnText}>Share Poll Link</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.btn, {backgroundColor: 'red'}]}
+          onPressOut={onPressDelete}>
+          <Icon name="trash" size={20} color="white" />
+          <Text style={styles.btnText}>Delete Poll</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -134,8 +226,8 @@ const PollDetail = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
     position: 'relative',
+    padding: 15,
   },
   name: {
     fontSize: 16,
@@ -160,17 +252,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  btn: {
+  btnBox: {
     position: 'absolute',
     bottom: 20,
-    alignSelf: 'center',
-    backgroundColor: '#007bff',
-    padding: 12,
     width: '100%',
+    alignSelf: 'center',
+  },
+  btn: {
+    padding: 14,
     borderRadius: 50,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
+    marginVertical: 5,
   },
   btnText: {
     fontSize: 16,

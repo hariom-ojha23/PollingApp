@@ -1,5 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, useColorScheme} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  useColorScheme,
+  ToastAndroid,
+} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
 
@@ -47,10 +53,13 @@ const VotePoll = props => {
     const document = await firestore().collection('polls').doc(poll.id).get();
 
     if (!document.exists) {
-      console.log('No Such Poll Exist. Please Refresh');
+      ToastAndroid.show(
+        'No Such Poll Exist. Please Refresh',
+        ToastAndroid.SHORT,
+      );
       return;
     } else if (document.data().voters.includes(user.uid)) {
-      console.log('You already voted!');
+      ToastAndroid.show('You already voted!', ToastAndroid.SHORT);
       return;
     }
 

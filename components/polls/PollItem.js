@@ -5,6 +5,7 @@ import {
   StyleSheet,
   useColorScheme,
   TouchableOpacity,
+  ToastAndroid,
 } from 'react-native';
 import Colors from '../../constants/Colors';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -50,10 +51,13 @@ const PollItem = ({poll}) => {
     const document = await firestore().collection('polls').doc(poll.id).get();
 
     if (!document.exists) {
-      console.log('No Such Poll Exist. Please Refresh');
+      ToastAndroid.show(
+        'No Such Poll Exist. Please Refresh',
+        ToastAndroid.SHORT,
+      );
       return;
     } else if (document.data().voters.includes(user.uid)) {
-      console.log('You already voted!');
+      ToastAndroid.show('You already voted!', ToastAndroid.SHORT);
       return;
     }
 
@@ -91,21 +95,26 @@ const PollItem = ({poll}) => {
         .collection('starred')
         .doc(user.uid)
         .set({starredPoll: [poll.id]})
-        .then(() => console.log('Set and Starred'))
+        .then(() => ToastAndroid.show('Set and Starred', ToastAndroid.SHORT)) // Adding to database if doc not exist
         .catch(er => console.log(er));
     } else if (starredPoll.includes(poll.id)) {
       firestore()
         .collection('starred')
         .doc(user.uid)
         .update({starredPoll: firestore.FieldValue.arrayRemove(poll.id)})
-        .then(() => console.log('Unstarred'))
+        .then(
+          () =>
+            ToastAndroid.show('Removed from starred polls', ToastAndroid.SHORT), // Removing if already exist
+        )
         .catch(er => console.log(er));
     } else {
       firestore()
         .collection('starred')
         .doc(user.uid)
         .update({starredPoll: firestore.FieldValue.arrayUnion(poll.id)})
-        .then(() => console.log('Starred'))
+        .then(
+          () => ToastAndroid.show('Added to starred polls', ToastAndroid.SHORT), // Adding if not exist
+        )
         .catch(er => console.log(er));
     }
   };
