@@ -224,6 +224,12 @@ android {
         }
     }
     signingConfigs {
+        release {
+            storeFile file('matdaan.keystore')
+            storePassword 'HariomOjha#23'
+            keyAlias 'matdaan'
+            keyPassword 'HariomOjha#23'
+        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'

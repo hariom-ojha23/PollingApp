@@ -7,6 +7,8 @@ import {FirebaseProvider} from './context/firebaseContext';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import navigationService from './navigation/navigation-service';
 
+import SplashScreen from 'react-native-splash-screen';
+
 const App = () => {
   const colorScheme = useColorScheme();
 
@@ -34,6 +36,11 @@ const App = () => {
         }, 1000);
       });
   }, []);
+
+  // hiding splashscreen
+  useEffect(() => {
+    SplashScreen.hide()
+  }, [])
 
   return (
     <FirebaseProvider>

@@ -118,8 +118,8 @@ const PollDetail = props => {
 
   const onPressShare = async () => {
     const link = await dynamicLinks().buildLink({
-      link: `https://pollingapp/vote?poll=${id}`,
-      domainUriPrefix: 'https://pollingapp.page.link',
+      link: `https://matdaanapp.page.link/vote?poll=${id}`,
+      domainUriPrefix: 'https://matdaanapp.page.link',
       android: {
         packageName: 'com.pollingapp',
         fallbackUrl:
